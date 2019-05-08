@@ -1,26 +1,27 @@
 package com.example.musiclibrary.model;
 
-import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 
-@Entity
 public class Artist {
-
-	@Id
-	@GeneratedValue
-	@Column(name = "id", updatable = false, nullable = false)
+	
+	public Artist() {
+	}
+	
+	public Artist(Long id, String name, Date birthDay, List<Long> songIds) {
+		this.id = id;
+		this.name = name;
+		this.birthDay = birthDay;
+		this.songIds = songIds;
+	}
+	
 	private Long id;
 
-	@Column
 	private String name;
 
-	@Column
-	@Temporal(TemporalType.DATE)
 	private Date birthDay;
 
-	@ManyToMany
-	private List<Song> songs;
+	private List<Long> songIds;
 
 	public Long getId() {
 		return id;
@@ -45,12 +46,12 @@ public class Artist {
 	public void setBirthDay(Date birthDay) {
 		this.birthDay = birthDay;
 	}
-
-	public List<Song> getSongs() {
-		return songs;
+	
+	public List<Long> getSongIds() {
+		return songIds;
 	}
-
-	public void setSongs(List<Song> songs) {
-		this.songs = songs;
+	
+	public void setSongIds(List<Long> songIds) {
+		this.songIds = songIds;
 	}
 }

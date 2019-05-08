@@ -1,45 +1,53 @@
-package com.example.musiclibrary.model;
+package com.example.musiclibrary.entity;
 
+import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 
-public class Song {
+@Entity
+@Table(name = "song")
+public class SongEntity {
 	
-	public Song() {
-	}
-	
-	public Song(Long id, String title, String album, Date releaseDate, List<Long> artistIds) {
-		this.id = id;
-		this.title = title;
-		this.album = album;
-		this.releaseDate = releaseDate;
-		this.artistIds = artistIds;
-	}
-	
+	@Id
+	@GeneratedValue
+	@Column(name = "id", updatable = false, nullable = false)
 	private Long id;
-	
+
+	@Column
 	private String title;
 	
+	@Column
 	private String album;
 	
+	@Column
+	@Temporal(TemporalType.DATE)
 	private Date releaseDate;
 	
-	private List<Long> artistIds;
+	@ManyToMany(mappedBy = "songs")
+	private List<ArtistEntity> artists;
 	
 	public Long getId() {
 		return id;
 	}
-	
+
 	public void setId(Long id) {
 		this.id = id;
 	}
-	
+
 	public String getTitle() {
 		return title;
 	}
-	
+
 	public void setTitle(String title) {
 		this.title = title;
+	}
+	
+	public List<ArtistEntity> getArtistEntities() {
+		return artists;
+	}
+	
+	public void setArtistEntities(List<ArtistEntity> artistEntities) {
+		this.artists = artistEntities;
 	}
 	
 	public String getAlbum() {
@@ -56,13 +64,5 @@ public class Song {
 	
 	public void setReleaseDate(Date releaseDate) {
 		this.releaseDate = releaseDate;
-	}
-	
-	public List<Long> getArtistIds() {
-		return artistIds;
-	}
-	
-	public void setArtistIds(List<Long> artistIds) {
-		this.artistIds = artistIds;
 	}
 }

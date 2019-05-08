@@ -1,42 +1,46 @@
 package com.example.musiclibrary.service;
 
 import com.example.musiclibrary.controller.errors.NotFoundException;
-import com.example.musiclibrary.model.Artist;
+import com.example.musiclibrary.entity.ArtistEntity;
+import com.example.musiclibrary.entity.SongEntity;
 import com.example.musiclibrary.model.Artist;
 import com.example.musiclibrary.repository.ArtistRepository;
-import com.example.musiclibrary.repository.ArtistRepository;
+import com.example.musiclibrary.repository.SongRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ArtistService {
 	final ArtistRepository artistRepository;
+	final SongRepository songRepository;
 	
-	public ArtistService(ArtistRepository artistRepository) {
+	public ArtistService(ArtistRepository artistRepository, SongRepository songRepository) {
 		this.artistRepository = artistRepository;
+		this.songRepository = songRepository;
 	}
 	
-	public Artist getArtist(Long id) {
+	public ArtistEntity getArtist(Long id) {
 		return artistRepository.findById(id).orElseThrow(NotFoundException::new);
 	}
 	
-	public List<Artist> getArtists(List<Long> ids) {
+	public List<ArtistEntity> getArtists(List<Long> ids) {
 		return artistRepository.findAllById(ids);
 	}
 	
-	public void saveArtist(Artist artist) {
-		artistRepository.saveAndFlush(artist);
+	public void saveArtist(ArtistEntity artistEntity) {
+		artistRepository.saveAndFlush(artistEntity);
 	}
 	
-	public void editArtist(Artist artist, Long id) {
-		Artist savedArtist = artistRepository.findById(id).orElseThrow(NotFoundException::new);
+	public void editArtist(ArtistEntity artistEntity, Long id) {
+		ArtistEntity savedArtistEntity = artistRepository.findById(id).orElseThrow(NotFoundException::new);
 		
-		savedArtist.setName(artist.getName());
-		savedArtist.setBirthDay(artist.getBirthDay());
-		savedArtist.setSongs(artist.getSongs());
+		savedArtistEntity.setName(artistEntity.getName());
+		savedArtistEntity.setBirthDay(artistEntity.getBirthDay());
+		savedArtistEntity.setSongEntities(artistEntity.getSongEntities());
 		
-		artistRepository.saveAndFlush(savedArtist);
+		artistRepository.saveAndFlush(savedArtistEntity);
 	}
 	
 	public void deleteArtist(Long id) {
@@ -45,5 +49,33 @@ public class ArtistService {
 		} else {
 			throw new NotFoundException();
 		}
+	}
+	
+	public Artist artistEntityToModel(ArtistEntity artistEntity) {
+		Artist artist = new Artist();
+		
+		artist.setId(artistEntity.getId());
+		artist.setName(artistEntity.getName());
+		artist.setBirthDay(artistEntity.getBirthDay());
+		artist.setSongIds(artistEntity.getSongEntities()
+				.stream()
+				.map(SongEntity::getId)
+				.collect(Collectors.toList())
+		);
+		
+		return artist;
+	}
+	
+	public ArtistEntity artistModelToEntity(Artist artist) {
+		ArtistEntity artistEntity = new ArtistEntity();
+		
+		artistEntity.setId(artist.getId());
+		artistEntity.setName(artist.getName());
+		artistEntity.setBirthDay(artist.getBirthDay());
+		
+		List<SongEntity> songEntities = songRepository.findAllById(artist.getSongIds());
+		artistEntity.setSongEntities(songEntities);
+		
+		return artistEntity;
 	}
 }
