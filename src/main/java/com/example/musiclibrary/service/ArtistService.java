@@ -73,8 +73,12 @@ public class ArtistService {
 		artistEntity.setName(artist.getName());
 		artistEntity.setBirthDay(artist.getBirthDay());
 		
-		List<SongEntity> songEntities = songRepository.findAllById(artist.getSongIds());
-		artistEntity.setSongEntities(songEntities);
+		if (artist.getSongIds() != null) {
+			List<SongEntity> songEntities = songRepository.findAllById(artist.getSongIds());
+			artistEntity.setSongEntities(songEntities);
+		} else {
+			artistEntity.setSongEntities(null);
+		}
 		
 		return artistEntity;
 	}

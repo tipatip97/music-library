@@ -74,8 +74,12 @@ public class SongService {
 		songEntity.setTitle(song.getTitle());
 		songEntity.setAlbum(song.getAlbum());
 		
-		List<ArtistEntity> songEntities = artistRepository.findAllById(song.getArtistIds());
-		songEntity.setArtistEntities(songEntities);
+		if (song.getArtistIds() != null) {
+			List<ArtistEntity> songEntities = artistRepository.findAllById(song.getArtistIds());
+			songEntity.setArtistEntities(songEntities);
+		} else {
+			songEntity.setArtistEntities(null);
+		}
 		
 		return songEntity;
 	}
