@@ -73,4 +73,10 @@ public class ArtistService {
 		
 		return artistEntity;
 	}
+	
+	public List<ArtistDTO> getAll() {
+		return artistRepository.findAll().stream()
+				.map(ArtistDTO::getArtistDTO)
+				.collect(Collectors.toList());
+	}
 }

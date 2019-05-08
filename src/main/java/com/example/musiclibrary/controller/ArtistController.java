@@ -22,6 +22,11 @@ public class ArtistController {
 
 		artistService.saveArtist(artistDTO);
 	}
+	
+	@RequestMapping(path = "/all", method = RequestMethod.GET)
+	public List<ArtistDTO> getAll() {
+		return artistService.getAll();
+	}
 
 	@RequestMapping(path = "/{id}", method = RequestMethod.GET)
 	public ArtistDTO getArtist(

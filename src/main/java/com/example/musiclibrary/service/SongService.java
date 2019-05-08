@@ -75,4 +75,10 @@ public class SongService {
 		return songEntity;
 	}
 	
+	
+	public List<SongDTO> getAll() {
+		return songRepository.findAll().stream()
+				.map(SongDTO::getSongDTO)
+				.collect(Collectors.toList());
+	}
 }

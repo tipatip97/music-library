@@ -23,6 +23,11 @@ public class SongController {
 		songService.saveSong(songDTO);
 	}
 
+	@RequestMapping(path = "/all", method = RequestMethod.GET)
+	public List<SongDTO> getAll() {
+		return songService.getAll();
+	}
+
 	@RequestMapping(path = "/{id}", method = RequestMethod.GET)
 	public SongDTO getSong(
 			@PathVariable(name = "id") Long id) {
