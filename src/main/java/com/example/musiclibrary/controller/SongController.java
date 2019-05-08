@@ -5,12 +5,9 @@ import com.example.musiclibrary.model.Song;
 import com.example.musiclibrary.repository.ArtistRepository;
 import com.example.musiclibrary.repository.SongRepository;
 import com.example.musiclibrary.service.LibraryService;
-import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.lang.reflect.Field;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping(path = "/song")
@@ -63,26 +60,6 @@ public class SongController {
 
 		return savedSong;
 	}
-
-	@RequestMapping(path = "/{id}", method = RequestMethod.PATCH)
-	public Song updateSong(
-			@PathVariable(name = "id") Long id,
-			@RequestBody Map<String, Object> fields) {
-
-		Song savedSong = songRepository.findById(id).orElseThrow(NotFoundException::new);
-
-		fields.forEach((s, o) -> {
-			Field field = ReflectionUtils.findField(Song.class, s);
-			ReflectionUtils.setField(field, savedSong, o);
-		});
-
-		songRepository.saveAndFlush(savedSong);
-
-		//TODO: test
-		return savedSong;
-	}
-
-
 
 	@RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
 	public void deleteSong(
