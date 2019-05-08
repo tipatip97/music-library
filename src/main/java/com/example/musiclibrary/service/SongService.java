@@ -1,9 +1,9 @@
 package com.example.musiclibrary.service;
 
+import com.example.musiclibrary.DTO.SongDTO;
 import com.example.musiclibrary.controller.errors.NotFoundException;
-import com.example.musiclibrary.entity.ArtistEntity;
-import com.example.musiclibrary.entity.SongEntity;
-import com.example.musiclibrary.model.Song;
+import com.example.musiclibrary.entity.Artist;
+import com.example.musiclibrary.entity.Song;
 import com.example.musiclibrary.repository.ArtistRepository;
 import com.example.musiclibrary.repository.SongRepository;
 import org.springframework.stereotype.Service;
@@ -13,35 +13,38 @@ import java.util.stream.Collectors;
 
 @Service
 public class SongService {
-	final SongRepository songRepository;
-	final ArtistRepository artistRepository;
+	private final SongRepository songRepository;
+	private final ArtistRepository artistRepository;
 	
 	public SongService(SongRepository songRepository, ArtistRepository artistRepository) {
 		this.songRepository = songRepository;
 		this.artistRepository = artistRepository;
 	}
 	
-	public SongEntity getSong(Long id) {
+	public Song getSong(Long id) {
 		return songRepository.findById(id).orElseThrow(NotFoundException::new);
 	}
 	
-	public List<SongEntity> getSongs(List<Long> ids) {
+	public List<Song> getSongs(List<Long> ids) {
 		return songRepository.findAllById(ids);
 	}
 	
-	public void saveSong(SongEntity songEntity) {
-		songRepository.saveAndFlush(songEntity);
+	public void saveSong(SongDTO songDTO) {
+		Song song = songModelToEntity(songDTO);
+		songRepository.saveAndFlush(song);
 	}
 	
-	public void editSong(SongEntity songEntity, Long id) {
-		SongEntity savedSongEntity = songRepository.findById(id).orElseThrow(NotFoundException::new);
+	public void editSong(SongDTO songDTO, Long id) {
+		Song song = songModelToEntity(songDTO);
 		
-		savedSongEntity.setTitle(songEntity.getTitle());
-		savedSongEntity.setAlbum(songEntity.getAlbum());
-		savedSongEntity.setReleaseDate(songEntity.getReleaseDate());
-		savedSongEntity.setArtistEntities(songEntity.getArtistEntities());
+		Song savedSong = songRepository.findById(id).orElseThrow(NotFoundException::new);
 		
-		songRepository.saveAndFlush(savedSongEntity);
+		savedSong.setTitle(song.getTitle());
+		savedSong.setAlbum(song.getAlbum());
+		savedSong.setReleaseDate(song.getReleaseDate());
+		savedSong.setArtistEntities(song.getArtistEntities());
+		
+		songRepository.saveAndFlush(savedSong);
 	}
 	
 	public void deleteSong(Long id) {
@@ -52,33 +55,21 @@ public class SongService {
 		}
 	}
 	
-	public Song songEntityToModel(SongEntity songEntity) {
-		Song song = new Song();
-		
-		song.setId(songEntity.getId());
-		song.setTitle(songEntity.getTitle());
-		song.setAlbum(songEntity.getAlbum());
-		song.setReleaseDate(songEntity.getReleaseDate());
-		song.setArtistIds(songEntity.getArtistEntities()
-				.stream()
-				.map(ArtistEntity::getId)
-				.collect(Collectors.toList()));
-		
-		return song;
-	}
-	
-	public SongEntity songModelToEntity(Song song) {
-		SongEntity songEntity = new SongEntity();
+	public Song songModelToEntity(SongDTO song) {
+		Song songEntity = new Song();
 		
 		songEntity.setId(song.getId());
 		songEntity.setTitle(song.getTitle());
 		songEntity.setAlbum(song.getAlbum());
 		
 		if (song.getArtistIds() != null) {
-			List<ArtistEntity> songEntities = artistRepository.findAllById(song.getArtistIds());
+			List<Artist> songEntities = artistRepository.findAllById(song.getArtistIds());
 			songEntity.setArtistEntities(songEntities);
 		} else {
 			songEntity.setArtistEntities(null);
+		}
+		if (song.getArtistIds().size() != songEntity.getArtistEntities().size()) {
+			throw new NotFoundException();
 		}
 		
 		return songEntity;

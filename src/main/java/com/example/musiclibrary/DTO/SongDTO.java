@@ -1,14 +1,19 @@
-package com.example.musiclibrary.model;
+package com.example.musiclibrary.DTO;
 
+import com.example.musiclibrary.entity.Artist;
+import com.example.musiclibrary.entity.Song;
+
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class Song {
+public class SongDTO {
 	
-	public Song() {
+	public SongDTO() {
 	}
 	
-	public Song(Long id, String title, String album, Date releaseDate, List<Long> artistIds) {
+	public SongDTO(Long id, String title, String album, Date releaseDate, List<Long> artistIds) {
 		this.id = id;
 		this.title = title;
 		this.album = album;
@@ -24,7 +29,21 @@ public class Song {
 	
 	private Date releaseDate;
 	
-	private List<Long> artistIds;
+	private List<Long> artistIds = new ArrayList<>();
+	
+	public static SongDTO getSongDTO(Song song) {
+		SongDTO songDTO = new SongDTO();
+		
+		songDTO.setId(song.getId());
+		songDTO.setTitle(song.getTitle());
+		songDTO.setAlbum(song.getAlbum());
+		songDTO.setReleaseDate(song.getReleaseDate());
+		songDTO.setArtistIds(song.getArtistEntities().stream()
+				.map(Artist::getId)
+				.collect(Collectors.toList()));
+		
+		return songDTO;
+	}
 	
 	public Long getId() {
 		return id;

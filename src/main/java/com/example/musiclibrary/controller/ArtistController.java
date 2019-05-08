@@ -1,6 +1,6 @@
 package com.example.musiclibrary.controller;
 
-import com.example.musiclibrary.model.Artist;
+import com.example.musiclibrary.DTO.ArtistDTO;
 import com.example.musiclibrary.service.ArtistService;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,33 +18,33 @@ public class ArtistController {
 
 	@RequestMapping(method = RequestMethod.POST)
 	public void saveArtist(
-			@RequestBody Artist artist) {
+			@RequestBody ArtistDTO artistDTO) {
 
-		artistService.saveArtist(artistService.artistModelToEntity(artist));
+		artistService.saveArtist(artistDTO);
 	}
 
 	@RequestMapping(path = "/{id}", method = RequestMethod.GET)
-	public Artist getArtist(
+	public ArtistDTO getArtist(
 			@PathVariable(name = "id") Long id) {
 
-		return artistService.artistEntityToModel(artistService.getArtist(id));
+		return ArtistDTO.getArtistDTO(artistService.getArtist(id));
 	}
 
 	@RequestMapping(method = RequestMethod.GET)
-	public List<Artist> getArtist(
+	public List<ArtistDTO> getArtist(
 			@RequestParam(value = "id") List<Long> ids) {
 		
 		return artistService.getArtists(ids).stream()
-				.map(artistService::artistEntityToModel)
+				.map(ArtistDTO::getArtistDTO)
 				.collect(Collectors.toList());
 	}
 
 	@RequestMapping(path = "/{id}", method = RequestMethod.PUT)
 	public void updateArtist(
 			@PathVariable(name = "id") Long id,
-			@RequestBody Artist artist) {
+			@RequestBody ArtistDTO artistDTO) {
 
-		artistService.editArtist(artistService.artistModelToEntity(artist), id);
+		artistService.editArtist(artistDTO, id);
 	}
 
 	@RequestMapping(path = "/{id}", method = RequestMethod.DELETE)

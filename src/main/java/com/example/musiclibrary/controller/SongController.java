@@ -1,7 +1,6 @@
 package com.example.musiclibrary.controller;
 
-import com.example.musiclibrary.entity.SongEntity;
-import com.example.musiclibrary.model.Song;
+import com.example.musiclibrary.DTO.SongDTO;
 import com.example.musiclibrary.service.SongService;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,24 +18,24 @@ public class SongController {
 
 	@RequestMapping(method = RequestMethod.POST)
 	public void saveSong(
-			@RequestBody Song song) {
+			@RequestBody SongDTO songDTO) {
 
-		songService.saveSong(songService.songModelToEntity(song));
+		songService.saveSong(songDTO);
 	}
 
 	@RequestMapping(path = "/{id}", method = RequestMethod.GET)
-	public Song getSong(
+	public SongDTO getSong(
 			@PathVariable(name = "id") Long id) {
 
-		return songService.songEntityToModel(songService.getSong(id));
+		return SongDTO.getSongDTO(songService.getSong(id));
 	}
 
 	@RequestMapping(method = RequestMethod.GET)
-	public List<Song> getSong(
+	public List<SongDTO> getSong(
 			@RequestParam(value = "id") List<Long> ids) {
 		
 		return songService.getSongs(ids).stream()
-				.map(songService::songEntityToModel)
+				.map(SongDTO::getSongDTO)
 				.collect(Collectors.toList());
 
 	}
@@ -44,9 +43,9 @@ public class SongController {
 	@RequestMapping(path = "/{id}", method = RequestMethod.PUT)
 	public void updateSong(
 			@PathVariable(name = "id") Long id,
-			@RequestBody SongEntity songEntity) {
+			@RequestBody SongDTO songDTO) {
 
-		songService.editSong(songEntity, id);
+		songService.editSong(songDTO, id);
 	}
 
 	@RequestMapping(path = "/{id}", method = RequestMethod.DELETE)

@@ -1,12 +1,13 @@
 package com.example.musiclibrary.entity;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @Entity
 @Table(name = "artist")
-public class ArtistEntity {
+public class Artist {
 
 	@Id
 	@GeneratedValue
@@ -21,7 +22,10 @@ public class ArtistEntity {
 	private Date birthDay;
 
 	@ManyToMany
-	private List<SongEntity> songs;
+	@JoinTable(name = "artists_songs",
+			joinColumns = @JoinColumn(name = "artists_id"),
+			inverseJoinColumns = @JoinColumn(name = "songs_id"))
+	private List<Song> songs = new ArrayList<>();
 
 	public Long getId() {
 		return id;
@@ -47,11 +51,11 @@ public class ArtistEntity {
 		this.birthDay = birthDay;
 	}
 
-	public List<SongEntity> getSongEntities() {
+	public List<Song> getSongEntities() {
 		return songs;
 	}
 
-	public void setSongEntities(List<SongEntity> songEntities) {
+	public void setSongEntities(List<Song> songEntities) {
 		this.songs = songEntities;
 	}
 }
