@@ -1,20 +1,19 @@
 package com.example.musiclibrary.controller;
 
-import com.example.musiclibrary.model.Artist;
+import com.example.musiclibrary.controller.errors.NotFoundException;
 import com.example.musiclibrary.model.Song;
 import com.example.musiclibrary.repository.ArtistRepository;
 import com.example.musiclibrary.repository.SongRepository;
 import com.example.musiclibrary.service.LibraryService;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.util.ReflectionUtils;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Date;
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
 
 @RestController
-@RequestMapping(path = "/")
+@RequestMapping(path = "/song")
 public class SongController {
 	private final LibraryService libraryService;
 	private final SongRepository songRepository;
@@ -25,24 +24,74 @@ public class SongController {
 		this.songRepository = songRepository;
 		this.singerRepository = singerRepository;
 	}
-	
-	@RequestMapping(method = RequestMethod.POST, path = "test")
-	public void test() {
-		Song song = new Song();
-		song.setTitle("LALA");
+
+	@RequestMapping(method = RequestMethod.POST)
+	public void saveSong(
+			@RequestBody Song song) {
+
 		songRepository.saveAndFlush(song);
-		
-		Artist singer = new Artist();
-		singer.setName("Anton");
-		singer.setBirthDay(new Date());
-		
-		List<Song> songs = new ArrayList<>();
-		songs.add(song);
-		singer.setSongs(songs);
-		
-		singerRepository.saveAndFlush(singer);
-		
-		System.out.println(libraryService.test());
+		System.out.println("song created");
 	}
 
+	@RequestMapping(path = "/{id}", method = RequestMethod.GET)
+	public Song getSong(
+			@PathVariable(name = "id") Long id) {
+
+		return songRepository.findById(id).orElseThrow(NotFoundException::new);
+	}
+
+	@RequestMapping(method = RequestMethod.GET)
+	public List<Song> getSong(
+			@RequestParam(value = "id") List<Long> ids) {
+
+		return songRepository.findAllById(ids);
+	}
+
+	@RequestMapping(path = "/{id}", method = RequestMethod.PUT)
+	public Song updateSong(
+			@PathVariable(name = "id") Long id,
+			@RequestBody Song song) {
+
+		Song savedSong = songRepository.findById(id).orElseThrow(NotFoundException::new);
+
+		savedSong.setTitle(song.getTitle());
+		savedSong.setAlbum(song.getAlbum());
+		savedSong.setReleaseDate(song.getReleaseDate());
+		savedSong.setArtists(song.getArtists());
+
+		songRepository.saveAndFlush(savedSong);
+
+		return savedSong;
+	}
+
+	@RequestMapping(path = "/{id}", method = RequestMethod.PATCH)
+	public Song updateSong(
+			@PathVariable(name = "id") Long id,
+			@RequestBody Map<String, Object> fields) {
+
+		Song savedSong = songRepository.findById(id).orElseThrow(NotFoundException::new);
+
+		fields.forEach((s, o) -> {
+			Field field = ReflectionUtils.findField(Song.class, s);
+			ReflectionUtils.setField(field, savedSong, o);
+		});
+
+		songRepository.saveAndFlush(savedSong);
+
+		//TODO: test
+		return savedSong;
+	}
+
+
+
+	@RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
+	public void deleteSong(
+			@PathVariable(name = "id") Long id) {
+
+		if (songRepository.existsById(id)) {
+			songRepository.deleteById(id);
+		} else {
+			throw new NotFoundException();
+		}
+	}
 }
