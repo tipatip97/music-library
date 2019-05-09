@@ -2,7 +2,12 @@ package com.example.musiclibrary.controller;
 
 import com.example.musiclibrary.DTO.ArtistDTO;
 import com.example.musiclibrary.service.ArtistService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,10 +22,16 @@ public class ArtistController {
 	}
 
 	@RequestMapping(method = RequestMethod.POST)
-	public void saveArtist(
-			@RequestBody ArtistDTO artistDTO) {
+	@ResponseStatus(HttpStatus.CREATED)
+	public ResponseEntity<?> saveArtist(
+			@RequestBody ArtistDTO artistDTO,
+			UriComponentsBuilder b) {
 
-		artistService.saveArtist(artistDTO);
+		Long id = artistService.saveArtist(artistDTO).getId();
+
+		UriComponents uriComponents = b.path("/{id}").buildAndExpand(id);
+
+		return ResponseEntity.created(uriComponents.toUri()).build();
 	}
 	
 	@RequestMapping(path = "/all", method = RequestMethod.GET)
@@ -45,6 +56,7 @@ public class ArtistController {
 	}
 
 	@RequestMapping(path = "/{id}", method = RequestMethod.PUT)
+	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void updateArtist(
 			@PathVariable(name = "id") Long id,
 			@RequestBody ArtistDTO artistDTO) {
@@ -53,6 +65,7 @@ public class ArtistController {
 	}
 
 	@RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
+	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void deleteArtist(
 			@PathVariable(name = "id") Long id) {
 

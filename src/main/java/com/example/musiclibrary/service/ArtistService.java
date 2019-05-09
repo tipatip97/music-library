@@ -29,9 +29,9 @@ public class ArtistService {
 		return artistRepository.findAllById(ids);
 	}
 	
-	public void saveArtist(ArtistDTO artistDTO) {
+	public Artist saveArtist(ArtistDTO artistDTO) {
 		Artist artist = artistModelToEntity(artistDTO);
-		artistRepository.saveAndFlush(artist);
+		return artistRepository.saveAndFlush(artist);
 	}
 	
 	public void editArtist(ArtistDTO artistDTO, Long id) {

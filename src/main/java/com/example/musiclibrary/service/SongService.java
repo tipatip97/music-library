@@ -29,9 +29,9 @@ public class SongService {
 		return songRepository.findAllById(ids);
 	}
 	
-	public void saveSong(SongDTO songDTO) {
+	public Song saveSong(SongDTO songDTO) {
 		Song song = songModelToEntity(songDTO);
-		songRepository.saveAndFlush(song);
+		return songRepository.saveAndFlush(song);
 	}
 	
 	public void editSong(SongDTO songDTO, Long id) {
