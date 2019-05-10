@@ -28,7 +28,7 @@ public class SongController {
 
 		Long id = songService.saveSong(songDTO).getId();
 
-		UriComponents uriComponents = b.path("/{id}").buildAndExpand(id);
+		UriComponents uriComponents = b.path("/song/{id}").buildAndExpand(id);
 
 		return ResponseEntity.created(uriComponents.toUri()).build();
 	}

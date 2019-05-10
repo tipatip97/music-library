@@ -29,7 +29,7 @@ public class ArtistController {
 
 		Long id = artistService.saveArtist(artistDTO).getId();
 
-		UriComponents uriComponents = b.path("/{id}").buildAndExpand(id);
+		UriComponents uriComponents = b.path("/artist/{id}").buildAndExpand(id);
 
 		return ResponseEntity.created(uriComponents.toUri()).build();
 	}
