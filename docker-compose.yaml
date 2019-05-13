@@ -1,0 +1,38 @@
+version: '3'
+services:
+
+  music-library:
+    build:
+        context: .
+        dockerfile: Dockerfile
+    image: ponomarenko/music-library
+    container_name: music-library
+    environment: 
+      - DB_URL=jdbc:postgresql://postgres:5432/${DB_NAME:?Проверьте конфигурацию файла .env}
+      - DB_USERNAME=${DB_USER:?Проверьте конфигурацию файла .env}
+      - DB_PASSWORD=${DB_PASSWORD:?Проверьте конфигурацию файла .env}
+    ports:
+      - "8080:8080"
+    restart: always
+    depends_on:
+      - postgres
+    networks:
+      - testnet 
+
+
+  postgres:
+    image: "postgres:11"
+    container_name: postgres
+#    ports:
+#      - "5432:5432"
+    environment:
+      - POSTGRES_DB=${DB_NAME:?Проверьте конфигурацию файла .env}
+      - POSTGRES_USER=${DB_USER:?Проверьте конфигурацию файла .env}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:?Проверьте конфигурацию файла .env}
+    restart: always
+    networks:
+      - testnet
+
+networks:
+  testnet:
+
