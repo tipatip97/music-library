@@ -34,7 +34,7 @@ public class ArtistController {
 		return ResponseEntity.created(uriComponents.toUri()).build();
 	}
 	
-	@RequestMapping(path = "/all", method = RequestMethod.GET)
+	@RequestMapping(path = "/", method = RequestMethod.GET)
 	public List<ArtistDTO> getAll() {
 		return artistService.getAll();
 	}

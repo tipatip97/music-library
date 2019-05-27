@@ -33,7 +33,7 @@ public class SongController {
 		return ResponseEntity.created(uriComponents.toUri()).build();
 	}
 
-	@RequestMapping(path = "/all", method = RequestMethod.GET)
+	@RequestMapping(path = "/", method = RequestMethod.GET)
 	public List<SongDTO> getAll() {
 		return songService.getAll();
 	}
